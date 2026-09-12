@@ -18,9 +18,9 @@ SolarPix is a high-performance React Native + TypeScript mobile application powe
 ### Decision 1: Encrypted SQLite Driver Selection
 - **Date:** 2026-09-13
 - **Status:** Approved
-- **Decision:** Selected `op-sqlite` (supporting SQLCipher encryption) as the primary encrypted SQLite driver for SolarPix.
+- **Decision:** Selected `@op-engineering/op-sqlite` (supporting SQLCipher encryption) as the primary encrypted SQLite driver for SolarPix.
 - **Reasoning:**
-  1. **Performance:** `op-sqlite` is a high-performance C++ JSI binding for SQLite that executes queries up to 10x faster than traditional bridge-based native modules.
-  2. **Security & Encryption:** `op-sqlite` provides built-in SQLCipher integration out of the box, allowing full AES-256 database encryption at rest.
-  3. **Expo Compatibility:** Offers full support for Expo dev builds via Config Plugins (`op-sqlite` plugin), enabling smooth integration in modern Expo projects.
+  1. **Performance:** `@op-engineering/op-sqlite` is a high-performance C++ JSI binding for SQLite that executes queries up to 10x faster than traditional bridge-based native modules.
+  2. **Security & Encryption:** `@op-engineering/op-sqlite` provides built-in SQLCipher integration out of the box, allowing full AES-256 database encryption at rest.
+  3. **Expo Compatibility:** Offers full support for Expo dev builds via Config Plugins (`@op-engineering/op-sqlite` plugin), enabling smooth integration in modern Expo projects.
   4. **Active Maintenance:** Highly active community maintenance and optimized compatibility with modern React Native architecture (New Architecture / Fabric / TurboModules).
