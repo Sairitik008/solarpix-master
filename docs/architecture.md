@@ -41,3 +41,12 @@ SolarPix is a high-performance React Native + TypeScript mobile application powe
   2. **Payload Encryption:** Backup JSON payloads are encrypted with AES-256-CBC using an IV generated per backup package.
   3. **HMAC Integrity Signature:** Computes an HMAC-SHA256 signature over `salt + IV + ciphertext` using the derived HMAC key.
   4. **Tamper Detection:** During restore, HMAC verification is performed BEFORE decryption. If any byte of the ciphertext or HMAC is altered, decryption is aborted with an integrity violation error.
+
+### Decision 4: Google Drive Private AppData & Calendar Sync
+- **Date:** 2026-09-13
+- **Status:** Approved & Implemented (Phase 5)
+- **Architecture & Technical Details:**
+  1. **Private Cloud Isolation (`appDataFolder`):** Backups are stored exclusively inside the vendor's private Google Drive `appDataFolder` (`https://www.googleapis.com/auth/drive.appdata`). The backup file is invisible in regular Google Drive UI, preventing accidental user deletion or modification.
+  2. **End-to-End Encryption:** Local database tables are serialized, encrypted with the vendor's PIN (PBKDF2 AES-256), and signed (HMAC-SHA256) before uploading. Google servers store only ciphertext and never have access to unencrypted database contents or PINs.
+  3. **Google Calendar Deadline Sync:** One-way synchronization pushes equipment delivery dates and bill payment deadlines directly to the vendor's primary Google Calendar via REST API.
+  4. **Optional Cloud Link:** Google OAuth integration is 100% optional. The application remains fully functional offline without requiring Google account linking.
