@@ -1,16 +1,29 @@
 import React from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types';
+import { Button } from '../components';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0D0D11" />
       <View style={styles.card}>
-        <Text style={styles.badge}>SOLARPIX</Text>
-        <Text style={styles.title}>SolarPix Scaffolding</Text>
+        <Text style={styles.badge}>SOLARPIX ARCHITECTURE</Text>
+        <Text style={styles.title}>Service & Error Layer</Text>
         <Text style={styles.subtitle}>
-          Mobile application initialized successfully. Phase 0 setup complete.
+          Encrypted database layer and centralized ServiceResult architecture active.
         </Text>
+        <Button
+          title="Open Customers Directory"
+          onPress={() => navigation.navigate('Customers')}
+          style={styles.navButton}
+        />
       </View>
     </View>
   );
@@ -53,5 +66,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+    marginBottom: 20,
+  },
+  navButton: {
+    width: '100%',
   },
 });
