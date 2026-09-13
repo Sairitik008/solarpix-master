@@ -5,9 +5,17 @@ export interface AppConfig {
   version: string;
 }
 
+export type MainTabParamList = {
+  HomeTab: undefined;
+  CustomersTab: undefined;
+  OrdersTab: undefined;
+  DeliveriesTab: undefined;
+  SettingsTab: undefined;
+};
+
 export type RootStackParamList = {
-  Home: undefined;
-  Customers: undefined;
+  MainTabs: undefined;
+  CustomerDetail: { customerId: string };
 };
 
 export interface ServiceError {

@@ -10,12 +10,20 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { customerService, Customer } from '../services';
 import { useAsyncOperation } from '../hooks';
 import { Button, Toast, LoadingState, EmptyState } from '../components';
+import { RootStackParamList } from '../types';
+
+type CustomersNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 export const CustomersScreen: React.FC = () => {
+  const navigation = useNavigation<CustomersNavigationProp>();
+
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
@@ -57,7 +65,7 @@ export const CustomersScreen: React.FC = () => {
 
   const handleCreateSuccessCase = async () => {
     const res = await createOp.execute({
-      name: nameInput || 'Solar Client ' + (fetchOp.data?.length || 0 + 1),
+      name: nameInput || 'Solar Client ' + ((fetchOp.data?.length || 0) + 1),
       phone: phoneInput || '+1-555-0182',
       email: emailInput || 'client@solar.com',
     });
@@ -82,10 +90,15 @@ export const CustomersScreen: React.FC = () => {
     });
 
     if (!res.success) {
-      // Displays friendly vendor message, NOT raw stack trace
       showToast(res.error.userFacingMessage, 'error');
     }
   };
+
+  const filteredCustomers = (fetchOp.data || []).filter(
+    (c) =>
+      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.phone && c.phone.includes(searchQuery))
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,6 +110,17 @@ export const CustomersScreen: React.FC = () => {
           <Text style={styles.title}>Customers Directory</Text>
         </View>
         <Button title="+ Add" onPress={() => setModalVisible(true)} style={styles.addHeaderBtn} />
+      </View>
+
+      {/* Search Input */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="🔍 Search customers by name or phone..."
+          placeholderTextColor="#555566"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
       </View>
 
       {/* Quick Test Actions Banner */}
@@ -125,29 +149,38 @@ export const CustomersScreen: React.FC = () => {
       {/* Content View */}
       {fetchOp.loading && (!fetchOp.data || fetchOp.data.length === 0) ? (
         <LoadingState message="Accessing encrypted customer ledger..." />
-      ) : !fetchOp.data || fetchOp.data.length === 0 ? (
+      ) : filteredCustomers.length === 0 ? (
         <EmptyState
           title="No Customers Found"
-          description="Your local database contains no customer records. Create your first customer to start tracking orders and ledger transactions."
+          description={
+            searchQuery
+              ? `No customer matching "${searchQuery}".`
+              : 'Your local database contains no customer records. Create your first customer to start tracking orders and ledger transactions.'
+          }
           actionTitle="Create Customer"
           onAction={() => setModalVisible(true)}
         />
       ) : (
         <FlatList
-          data={fetchOp.data}
+          data={filteredCustomers}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
-            <View style={styles.customerCard}>
+            <TouchableOpacity
+              style={styles.customerCard}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('CustomerDetail', { customerId: item.id })}
+            >
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>{item.name.charAt(0).toUpperCase()}</Text>
               </View>
               <View style={styles.cardInfo}>
                 <Text style={styles.customerName}>{item.name}</Text>
-                {item.phone ? <Text style={styles.customerSub}>{item.phone}</Text> : null}
-                {item.email ? <Text style={styles.customerSub}>{item.email}</Text> : null}
+                {item.phone ? <Text style={styles.customerSub}>📞 {item.phone}</Text> : null}
+                {item.email ? <Text style={styles.customerSub}>✉️ {item.email}</Text> : null}
               </View>
-            </View>
+              <Text style={styles.arrowIcon}>chevron-right ›</Text>
+            </TouchableOpacity>
           )}
         />
       )}
@@ -245,10 +278,24 @@ const styles = StyleSheet.create({
     height: 38,
     paddingHorizontal: 16,
   },
+  searchContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
+  searchInput: {
+    backgroundColor: '#16161F',
+    borderRadius: 10,
+    height: 42,
+    paddingHorizontal: 14,
+    color: '#FFFFFF',
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
   testBar: {
     backgroundColor: '#16161F',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderColor: 'rgba(255, 149, 0, 0.1)',
   },
@@ -322,6 +369,11 @@ const styles = StyleSheet.create({
     color: '#A0A0B0',
     fontSize: 13,
     marginTop: 2,
+  },
+  arrowIcon: {
+    color: '#6C6C7D',
+    fontSize: 20,
+    fontWeight: '700',
   },
   modalOverlay: {
     flex: 1,

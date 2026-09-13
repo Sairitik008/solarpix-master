@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen, CustomersScreen } from '../screens';
+import { MainTabNavigator } from './MainTabNavigator';
+import { CustomerDetailScreen } from '../screens';
 import { RootStackParamList } from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -15,8 +16,8 @@ export const AppNavigator: React.FC = () => {
           contentStyle: { backgroundColor: '#0D0D11' },
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Customers" component={CustomersScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+        <Stack.Screen name="CustomerDetail" component={CustomerDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

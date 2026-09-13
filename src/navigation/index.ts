@@ -1,1 +1,2 @@
-export { AppNavigator } from './AppNavigator';
+export * from './AppNavigator';
+export * from './MainTabNavigator';
